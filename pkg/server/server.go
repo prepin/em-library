@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"em-library/config"
-	"em-library/internal/app/api/handlers"
+	"em-library/internal/api/handlers"
 	"fmt"
 	"net/http"
 	"os"

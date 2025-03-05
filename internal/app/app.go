@@ -2,7 +2,10 @@ package app
 
 import (
 	"em-library/config"
-	"em-library/internal/app/api/handlers"
+	"em-library/internal/api/handlers"
+	"em-library/internal/repository"
+	"em-library/internal/services"
+	"em-library/internal/usecase"
 )
 
 type Application struct {
@@ -10,7 +13,17 @@ type Application struct {
 }
 
 func New(cfg *config.Config /* db *database.Database, redis *redis.Redis*/) *Application {
-	handlers := handlers.NewHandlers(cfg /*, usecases */)
+	repos := usecase.Repos{
+		SongRepo: repository.NewPGSongRepository(),
+	}
+
+	services := usecase.Services{
+		SongInfoService: services.NewRESTSongInfoService(),
+	}
+
+	usecases := usecase.NewUseCases(repos, services)
+
+	handlers := handlers.NewHandlers(cfg, usecases)
 
 	return &Application{
 		Handlers: handlers,
