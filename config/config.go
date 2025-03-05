@@ -14,10 +14,9 @@ type Config struct {
 }
 
 func Load() *Config {
-	config := &Config{
-		Logger: logging.NewLogger(),
-	}
+	config := &Config{}
 	config.load()
+
 	return config
 }
 
@@ -25,6 +24,14 @@ func (c *Config) load() {
 	err := godotenv.Load()
 	if err != nil {
 		c.Logger.Debug(".env file not found, only ENV variables are used")
+	}
+
+	logLevel := getEnv("EMLIB_LOG_LEVEL", "info")
+	switch logLevel {
+	case "debug", "info", "warning", "error":
+		c.Logger = logging.NewLogger(logLevel)
+	default:
+		c.Logger = logging.NewLogger("info")
 	}
 
 	c.loadDBConfig()

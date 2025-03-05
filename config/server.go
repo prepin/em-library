@@ -23,9 +23,9 @@ func (c *Config) loadServerConfig() {
 	}
 
 	var productionMode bool
-	mode := getEnv("EMLIB_SERVER_MODE", "50")
-	if mode != "" && mode != "production" {
-		c.Logger.Error("Error: EMLIB_SERVER_MODE must be empty or \"production\"")
+	mode := getEnv("EMLIB_SERVER_MODE", "debug")
+	if mode != "debug" && mode != "production" {
+		c.Logger.Error("Error: EMLIB_SERVER_MODE must be \"debug\" or \"production\". Setting debug level.")
 	}
 	if mode == "production" {
 		productionMode = true
