@@ -22,8 +22,8 @@ func NewSongsHandler(l config.Logger, u usecase.UseCases) *SongsHandler {
 }
 
 type CreateSongParams struct {
-	Group string `json:"group"`
-	Song  string `json:"song"`
+	Group string `json:"group" binding:"required,min=1"`
+	Song  string `json:"song" binding:"required,min=1"`
 }
 
 type SongResponse struct {
