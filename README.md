@@ -14,7 +14,5 @@
 * `EMLIB_DB_PASSWORD` — пароль подключения к базе данных (по умолчанию пустой)
 * `EMLIB_DB_NAME` — название базы на сервере Postgres.
 * `EMLIB_SERVER_PORT` — порт, на котором будет доступно API микросервиса (по умолчанию `8080`)
-* `EMLIB_SERVER_READ_TIMEOUT`
-* `EMLIB_SERVER_WRITE_TIMEOUT`
 * `EMLIB_SERVER_MODE` — режим работы Gin сервера (по умолчанию `debug`)
 * `EMLIB_LOG_LEVEL` — уровень логирования в логике приложения (по умолчанию `debug`)

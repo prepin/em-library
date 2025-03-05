@@ -30,10 +30,8 @@ func New(cfg *config.Config, handlers *handlers.Handlers) *Server {
 
 	return &Server{
 		httpServer: &http.Server{
-			Addr:         ":" + cfg.Server.Port,
-			Handler:      router,
-			ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,
-			WriteTimeout: time.Duration(cfg.Server.WriteTimeout) * time.Second,
+			Addr:    ":" + cfg.Server.Port,
+			Handler: router,
 		},
 		cfg: cfg,
 	}
