@@ -6,6 +6,6 @@ type UseCases struct {
 
 func NewUseCases(r Repos, s Services) UseCases {
 	return UseCases{
-		CreateSong: NewCreateSongUseCase(r.SongRepo, s.SongInfoService),
+		CreateSong: NewCreateSongUseCase(r.TransactionManager, r.SongRepo, r.LyricsRepo, s.SongInfoService),
 	}
 }

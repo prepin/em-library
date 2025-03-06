@@ -11,6 +11,7 @@ type ErrorResponse struct {
 }
 
 var NotFoundResponse = ErrorResponse{Error: "not found"}
+var AlreadyExistsResponse = ErrorResponse{Error: "already exists"}
 var InvalidRequestResponse = ErrorResponse{Error: "invalid request"}
 var ServerErrorResponse = ErrorResponse{Error: "server error"}
 

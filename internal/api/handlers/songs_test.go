@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"em-library/internal/api/handlers"
 	"em-library/internal/entities"
+	"em-library/internal/errs"
 	"em-library/internal/usecase"
 	"encoding/json"
 	"errors"
@@ -40,22 +41,22 @@ func TestSongsHandler_CreateSong_Success(t *testing.T) {
 	mockLogger.On("Error", mock.Anything, mock.Anything).Maybe()
 
 	inputData := handlers.CreateSongParams{
-		Group: "Test Group",
-		Song:  "Test Song",
+		Band: "Test Group",
+		Song: "Test Song",
 	}
 
 	releaseDate := time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC)
 	expectedSong := &entities.SongData{
 		ID:          123,
-		Group:       "Test Group",
+		Band:        "Test Group",
 		Song:        "Test Song",
 		ReleaseDate: releaseDate,
 		Link:        "https://example.com/song",
 	}
 
 	mockUseCase.On("Execute", mock.Anything, entities.NewSongData{
-		Group: inputData.Group,
-		Song:  inputData.Song,
+		Band: inputData.Band,
+		Song: inputData.Song,
 	}).Return(expectedSong, nil)
 
 	router := setupRouter(mockLogger, mockUseCase)
@@ -74,7 +75,7 @@ func TestSongsHandler_CreateSong_Success(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, expectedSong.ID, response.ID)
-	assert.Equal(t, expectedSong.Group, response.Group)
+	assert.Equal(t, expectedSong.Band, response.Band)
 	assert.Equal(t, expectedSong.Song, response.Song)
 	assert.Equal(t, "01.01.2022", response.ReleasedDate)
 	assert.Equal(t, expectedSong.Link, response.Link)
@@ -166,7 +167,7 @@ func TestSongsHandler_CreateSong_MissingFields(t *testing.T) {
 	}
 }
 
-// если юзкейс вернул ошибку, то проверяем что ручка отдала 500-ку
+// если юзкейс вернул неизвестную ошибку, то проверяем что ручка отдала 500-ку
 func TestSongsHandler_CreateSong_UseCaseError(t *testing.T) {
 	mockLogger := new(MockLogger)
 	mockUseCase := new(MockCreateSongUseCase)
@@ -174,13 +175,13 @@ func TestSongsHandler_CreateSong_UseCaseError(t *testing.T) {
 	mockLogger.On("Error", "Creation of song failed", mock.Anything).Once()
 
 	inputData := handlers.CreateSongParams{
-		Group: "Test Group",
-		Song:  "Test Song",
+		Band: "Test Group",
+		Song: "Test Song",
 	}
 
 	mockUseCase.On("Execute", mock.Anything, entities.NewSongData{
-		Group: inputData.Group,
-		Song:  inputData.Song,
+		Band: inputData.Band,
+		Song: inputData.Song,
 	}).Return(nil, errors.New("usecase error"))
 
 	router := setupRouter(mockLogger, mockUseCase)
@@ -193,6 +194,38 @@ func TestSongsHandler_CreateSong_UseCaseError(t *testing.T) {
 	router.ServeHTTP(recorder, req)
 
 	assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+
+	mockLogger.AssertExpectations(t)
+	mockUseCase.AssertExpectations(t)
+}
+
+// если юзкейс вернул известную ошибку, то проверяем что ручка отдала 409
+func TestSongsHandler_CreateSong_ExistingSong(t *testing.T) {
+	mockLogger := new(MockLogger)
+	mockUseCase := new(MockCreateSongUseCase)
+
+	mockLogger.On("Debug", "Song already exists", mock.Anything).Once()
+
+	inputData := handlers.CreateSongParams{
+		Band: "Test Group",
+		Song: "Test Song",
+	}
+
+	mockUseCase.On("Execute", mock.Anything, entities.NewSongData{
+		Band: inputData.Band,
+		Song: inputData.Song,
+	}).Return(nil, errs.ErrAlreadyExists)
+
+	router := setupRouter(mockLogger, mockUseCase)
+
+	jsonData, _ := json.Marshal(inputData)
+	req, _ := http.NewRequest(http.MethodPost, "/songs", bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	assert.Equal(t, http.StatusConflict, recorder.Code)
 
 	mockLogger.AssertExpectations(t)
 	mockUseCase.AssertExpectations(t)

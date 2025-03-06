@@ -14,17 +14,17 @@ type DBConfig struct {
 }
 
 func (c *Config) loadDBConfig() {
-	port, err := strconv.Atoi(getEnv("EMLIB_DB_PORT", "5432"))
+	port, err := strconv.Atoi(c.getEnv("EMLIB_DB_PORT", "5432"))
 	if err != nil {
 		c.Logger.Error("Error: EMLIB must be an integer")
 	}
 
 	c.DB = DBConfig{
-		Host:     getEnv("EMLIB_DB_HOST", "localhost"),
+		Host:     c.getEnv("EMLIB_DB_HOST", "localhost"),
 		Port:     port,
-		User:     getEnv("EMLIB_DB_USER", "postgres"),
-		Password: getEnv("EMLIB_DB_PASSWORD", ""),
-		DBName:   getEnv("EMLIB_NAME", "postgres"),
+		User:     c.getEnv("EMLIB_DB_USER", "postgres"),
+		Password: c.getEnv("EMLIB_DB_PASSWORD", ""),
+		DBName:   c.getEnv("EMLIB_DB_NAME", "postgres"),
 	}
 
 }

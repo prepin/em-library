@@ -6,15 +6,18 @@ import (
 	"em-library/internal/repository"
 	"em-library/internal/services"
 	"em-library/internal/usecase"
+	"em-library/pkg/database"
 )
 
 type Application struct {
 	Handlers *handlers.Handlers
 }
 
-func New(cfg *config.Config /* db *database.Database, redis *redis.Redis*/) *Application {
+func New(cfg *config.Config, db *database.Database) *Application {
 	repos := usecase.Repos{
-		SongRepo: repository.NewPGSongRepository(),
+		TransactionManager: db.TransactionManager,
+		SongRepo:           repository.NewPGSongRepository(db, cfg.Logger),
+		LyricsRepo:         repository.NewPGLyricsRepository(db, cfg.Logger),
 	}
 
 	services := usecase.Services{

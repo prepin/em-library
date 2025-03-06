@@ -10,34 +10,58 @@ type CreateSongUseCase interface {
 }
 
 type createSongUseCase struct {
-	songRepo        SongRepo
-	songInfoService SongInfoService
+	transactionManager TransactionManager
+	songRepo           SongRepo
+	lyricsRepo         LyricsRepo
+	songInfoService    SongInfoService
 }
 
-func NewCreateSongUseCase(r SongRepo, s SongInfoService) CreateSongUseCase {
+func NewCreateSongUseCase(
+	tm TransactionManager,
+	sr SongRepo,
+	lr LyricsRepo,
+	s SongInfoService,
+) CreateSongUseCase {
 	return &createSongUseCase{
-		songRepo:        r,
-		songInfoService: s,
+		transactionManager: tm,
+		songRepo:           sr,
+		lyricsRepo:         lr,
+		songInfoService:    s,
 	}
 }
 
 func (u *createSongUseCase) Execute(ctx context.Context, data entities.NewSongData) (*entities.SongData, error) {
-	// TODO: сходить в сторонний сервис за дополнительными данными
-	// не забыть передать внутрь контекст и внутри сервиса отменять по таймауту
-	info, err := u.songInfoService.GetInfo(ctx, data.Group, data.Song)
+	info, err := u.songInfoService.GetInfo(ctx, data.Band, data.Song)
 	if err != nil {
 		return nil, err
 	}
 
-	id, err := u.songRepo.Create(ctx, data)
+	data.ReleaseDate = info.ReleaseDate
+	data.Link = info.Link
+
+	var id int
+
+	err = u.transactionManager.Do(ctx, func(ctx context.Context) error {
+		id, err = u.songRepo.Create(ctx, data)
+		if err != nil {
+			return err
+		}
+
+		err = u.lyricsRepo.Create(ctx, entities.NewLyricsData{
+			SongID:  id,
+			Content: info.Text,
+		})
+
+		return nil
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: добавить данные из стороннего сервиса в итоговую структуру
 	song := entities.SongData{
 		ID:          id,
-		Group:       data.Group,
+		Band:        data.Band,
 		Song:        data.Song,
 		ReleaseDate: info.ReleaseDate,
 		Link:        info.Link,

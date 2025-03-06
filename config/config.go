@@ -26,7 +26,7 @@ func (c *Config) load() {
 		c.Logger.Debug(".env file not found, only ENV variables are used")
 	}
 
-	logLevel := getEnv("EMLIB_LOG_LEVEL", "info")
+	logLevel := os.Getenv("EMLIB_LOG_LEVEL")
 	switch logLevel {
 	case "debug", "info", "warning", "error":
 		c.Logger = logging.NewLogger(logLevel)
@@ -38,9 +38,10 @@ func (c *Config) load() {
 	c.loadServerConfig()
 }
 
-func getEnv(key, defaultValue string) string {
+func (c *Config) getEnv(key, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {
+		c.Logger.Debug("Environment variable not set. Fallback to default value", "key", key)
 		return defaultValue
 	}
 	return value

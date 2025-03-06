@@ -16,6 +16,8 @@ func NewRESTSongInfoService() *RESTSongInfoService {
 
 func (s *RESTSongInfoService) GetInfo(ctx context.Context, group, song string) (*entities.SongDetail, error) {
 
+	// TODO: логи всех уровней
+
 	songDetail := entities.SongDetail{
 		ReleaseDate: time.Now(),
 		Text: `Ooh baby, don't you know I suffer?\nOoh baby, can
