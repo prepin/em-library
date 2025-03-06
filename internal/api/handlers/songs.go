@@ -7,6 +7,7 @@ import (
 	"em-library/internal/usecase"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,19 +29,11 @@ type CreateSongParams struct {
 	Song string `json:"song" binding:"required,min=1"`
 }
 
-type SongResponse struct {
-	ID           int    `json:"id"`
-	Band         string `json:"group"` // в API инфосервиса используется термин group, сделаем единообразно
-	Song         string `json:"song"`
-	ReleasedDate string `json:"released_date"`
-	Link         string `json:"link"`
-}
-
 func (h *SongsHandler) CreateSong(c *gin.Context) {
 	var params *CreateSongParams
 
 	if err := c.ShouldBindJSON(&params); err != nil {
-		h.logger.Debug("Failed parsing credit request", "error", err)
+		h.logger.Debug("Failed parsing request params", "error", err)
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: formatValidationError(err)})
 		return
 	}
@@ -63,14 +56,54 @@ func (h *SongsHandler) CreateSong(c *gin.Context) {
 		return
 	}
 
-	h.logger.Info("Song created successfully", "id", songData.ID)
+	h.logger.Debug("Song created successfully", "id", songData.ID)
 
-	c.JSON(http.StatusCreated, SongResponse{
-		ID:           songData.ID,
-		Band:         songData.Band,
-		Song:         songData.Song,
-		ReleasedDate: songData.ReleaseDate.Format("02.01.2006"),
-		Link:         songData.Link,
+	c.JSON(http.StatusCreated, songData)
+
+}
+
+type GetSongsParams struct {
+	ID              *int       `form:"id" binding:"omitempty,gt=0"`
+	Band            *string    `form:"band" binding:"omitempty,min=1"`
+	Song            *string    `form:"song" binding:"omitempty,min=1"`
+	ReleaseDateFrom *time.Time `form:"release_date_from" binding:"omitempty" time_format:"2006-01-02"`
+	ReleaseDateTo   *time.Time `form:"release_date_to" binding:"omitempty" time_format:"2006-01-02"`
+	Offset          *int       `form:"offset" binding:"omitempty"`
+	Limit           *int       `form:"limit" binding:"omitempty,min=1"`
+}
+
+func (h *SongsHandler) GetSongsList(c *gin.Context) {
+	var params GetSongsParams
+
+	if err := c.ShouldBindQuery(&params); err != nil {
+		h.logger.Debug("Failed parsing request params", "error", err)
+		c.JSON(http.StatusBadRequest, InvalidRequestResponse)
+		return
+	}
+
+	songs, err := h.usecases.GetSongList.Execute(c.Request.Context(), entities.SongFilterData{
+		ID:              params.ID,
+		Band:            params.Band,
+		Song:            params.Song,
+		ReleaseDateFrom: params.ReleaseDateFrom,
+		ReleaseDateTo:   params.ReleaseDateTo,
+		Offset:          params.Offset,
+		Limit:           params.Limit,
 	})
 
+	if err != nil {
+		if errors.Is(err, errs.ErrNotFound) {
+			h.logger.Debug("No songs found", "error", err)
+			c.JSON(http.StatusNotFound, NotFoundResponse)
+			return
+		}
+
+		h.logger.Error("Getting song list failed", "error", err)
+		c.JSON(http.StatusInternalServerError, ServerErrorResponse)
+		return
+	}
+
+	h.logger.Debug("Songs list retrieved successfully")
+
+	c.JSON(http.StatusOK, songs)
 }

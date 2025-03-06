@@ -8,9 +8,11 @@ import (
 	"em-library/pkg/database"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/stephenafamo/bob/dialect/psql"
 	"github.com/stephenafamo/bob/dialect/psql/im"
+	"github.com/stephenafamo/bob/dialect/psql/sm"
 )
 
 type PGSongRepository struct {
@@ -56,4 +58,58 @@ func (r *PGSongRepository) Create(ctx context.Context, data entities.NewSongData
 	}
 	r.logger.Debug("song inserted successfully", "id", id)
 	return id, nil
+}
+
+func (r *PGSongRepository) GetList(
+	ctx context.Context,
+	filter entities.SongFilterData,
+) ([]entities.SongData, error) {
+
+	stmt := psql.Select(
+		sm.Columns("id", "band", "song", "release_date", "link"),
+		sm.From("songs"),
+		sm.Limit(*filter.Limit),
+		sm.Offset(*filter.Offset),
+		sm.OrderBy("release_date"),
+	)
+
+	if filter.ID != nil {
+		stmt.Apply(sm.Where(psql.Quote("id").EQ(psql.Arg(*filter.ID))))
+	}
+
+	if filter.Band != nil {
+		stmt.Apply(sm.Where(psql.Quote("band").EQ(psql.Arg(*filter.Band))))
+	}
+
+	if filter.Song != nil {
+		stmt.Apply(sm.Where(psql.Quote("song").EQ(psql.Arg(*filter.Song))))
+	}
+
+	if filter.ReleaseDateFrom != nil {
+		stmt.Apply(sm.Where(psql.Quote("release_date").GTE(psql.Arg(*filter.ReleaseDateFrom))))
+	}
+
+	if filter.ReleaseDateTo != nil {
+		stmt.Apply(sm.Where(psql.Quote("release_date").LTE(psql.Arg(*filter.ReleaseDateTo))))
+	}
+
+	query, args := stmt.MustBuild(ctx)
+	r.logger.Debug("executing select song list query", "query", query, "args", args)
+
+	rows, err := r.db.Conn(ctx).Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	songs, err := pgx.CollectRows(rows, pgx.RowToStructByName[entities.SongData])
+	if err != nil {
+		return nil, err
+	}
+
+	if len(songs) == 0 {
+		return nil, fmt.Errorf("%w songs not found", errs.ErrNotFound)
+	}
+
+	r.logger.Debug("Successfully queried songs", "count", len(songs))
+	return songs, nil
 }

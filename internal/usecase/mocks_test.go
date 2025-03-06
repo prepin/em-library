@@ -28,6 +28,16 @@ func (m *MockSongRepo) Create(ctx context.Context, data entities.NewSongData) (i
 	return args.Int(0), args.Error(1)
 }
 
+func (m *MockSongRepo) GetList(ctx context.Context, filter entities.SongFilterData) ([]entities.SongData, error) {
+	args := m.Called(ctx, filter)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).([]entities.SongData), args.Error(1)
+}
+
 type MockLyricsRepo struct {
 	mock.Mock
 }

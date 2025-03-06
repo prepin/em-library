@@ -21,6 +21,7 @@ type Services struct {
 
 type SongRepo interface {
 	Create(ctx context.Context, data entities.NewSongData) (int, error)
+	GetList(ctx context.Context, filter entities.SongFilterData) ([]entities.SongData, error)
 }
 
 type LyricsRepo interface {

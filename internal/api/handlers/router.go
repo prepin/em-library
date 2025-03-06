@@ -33,6 +33,7 @@ func (h *Handlers) RegisterRoutes(r *gin.Engine) {
 
 			// Songs
 			g.POST("/song", h.Songs.CreateSong)
+			g.GET("/songs", h.Songs.GetSongsList)
 		}
 	}
 
