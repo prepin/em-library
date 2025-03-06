@@ -10,12 +10,14 @@ import (
 type Handlers struct {
 	config *config.Config
 	Songs  *SongsHandler
+	Lyrics *LyricsHandler
 }
 
 func NewHandlers(cfg *config.Config, usecases usecase.UseCases) *Handlers {
 	return &Handlers{
 		config: cfg,
 		Songs:  NewSongsHandler(cfg.Logger, usecases),
+		Lyrics: NewLyricsHandler(cfg.Logger, usecases),
 	}
 }
 
@@ -31,9 +33,12 @@ func (h *Handlers) RegisterRoutes(r *gin.Engine) {
 			g.GET("/ping", GetPingHandler)
 			g.GET("/teapot", GetTeapotHandler)
 
-			// Songs
+			// Песни
 			g.POST("/song", h.Songs.CreateSong)
 			g.GET("/songs", h.Songs.GetSongsList)
+
+			// Тексты
+			g.GET("/song/:id/lyrics", h.Lyrics.GetLyrics)
 		}
 	}
 

@@ -26,6 +26,7 @@ type SongRepo interface {
 
 type LyricsRepo interface {
 	Create(ctx context.Context, data entities.NewLyricsData) error
+	Get(ctx context.Context, songID int) (entities.LyricsData, error)
 }
 
 type SongInfoService interface {

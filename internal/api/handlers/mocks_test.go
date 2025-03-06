@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockLogger implements the Logger interface for testing
 type MockLogger struct {
 	mock.Mock
 }
@@ -54,4 +53,16 @@ func (m *MockGetSongListUseCase) Execute(ctx context.Context, filter entities.So
 		return nil, args.Error(1)
 	}
 	return args.Get(0).([]entities.SongData), args.Error(1)
+}
+
+type MockGetSongLyricsUseCase struct {
+	mock.Mock
+}
+
+func (m *MockGetSongLyricsUseCase) Execute(ctx context.Context, songID int, filter entities.LyricsFilterData) ([]entities.LyricsVerseData, error) {
+	args := m.Called(ctx, songID, filter)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]entities.LyricsVerseData), args.Error(1)
 }

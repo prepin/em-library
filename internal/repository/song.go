@@ -68,8 +68,6 @@ func (r *PGSongRepository) GetList(
 	stmt := psql.Select(
 		sm.Columns("id", "band", "song", "release_date", "link"),
 		sm.From("songs"),
-		sm.Limit(*filter.Limit),
-		sm.Offset(*filter.Offset),
 		sm.OrderBy("release_date"),
 	)
 
@@ -91,6 +89,14 @@ func (r *PGSongRepository) GetList(
 
 	if filter.ReleaseDateTo != nil {
 		stmt.Apply(sm.Where(psql.Quote("release_date").LTE(psql.Arg(*filter.ReleaseDateTo))))
+	}
+
+	if filter.Offset != nil {
+		stmt.Apply(sm.Offset(*filter.Offset))
+	}
+
+	if filter.Limit != nil {
+		stmt.Apply(sm.Limit(*filter.Limit))
 	}
 
 	query, args := stmt.MustBuild(ctx)

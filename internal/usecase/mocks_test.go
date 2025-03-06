@@ -47,6 +47,16 @@ func (m *MockLyricsRepo) Create(ctx context.Context, data entities.NewLyricsData
 	return args.Error(0)
 }
 
+func (m *MockLyricsRepo) Get(ctx context.Context, songID int) (entities.LyricsData, error) {
+	args := m.Called(ctx, songID)
+
+	if args.Get(0) == nil {
+		return entities.LyricsData{}, args.Error(1)
+	}
+
+	return args.Get(0).(entities.LyricsData), args.Error(1)
+}
+
 type MockSongInfoService struct {
 	mock.Mock
 }
