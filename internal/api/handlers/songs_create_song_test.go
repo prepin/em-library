@@ -20,7 +20,7 @@ import (
 
 func setupPostSongsRouter(mockLogger *MockLogger, mockUseCases *MockCreateSongUseCase) *gin.Engine {
 	gin.SetMode(gin.TestMode)
-	r := gin.Default()
+	r := gin.New()
 
 	useCases := usecase.UseCases{
 		CreateSong: mockUseCases,

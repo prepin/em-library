@@ -7,6 +7,7 @@ import (
 	"em-library/internal/usecase"
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -106,4 +107,24 @@ func (h *SongsHandler) GetSongsList(c *gin.Context) {
 	h.logger.Debug("Songs list retrieved successfully")
 
 	c.JSON(http.StatusOK, songs)
+}
+
+func (h *SongsHandler) DeleteSong(c *gin.Context) {
+	songIDParam := c.Param("id")
+	songID, err := strconv.Atoi(songIDParam)
+
+	if err != nil {
+		h.logger.Debug("Missing or invalid ID param for request", "ID param", songIDParam)
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "song ID is required"})
+		return
+	}
+
+	err = h.usecases.DeleteSong.Execute(c.Request.Context(), songID)
+	if err != nil {
+		h.logger.Debug("Failed to delete song", "ID", songID)
+		c.JSON(http.StatusInternalServerError, ServerErrorResponse)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

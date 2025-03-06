@@ -11,6 +11,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/stephenafamo/bob/dialect/psql"
+	"github.com/stephenafamo/bob/dialect/psql/dm"
 	"github.com/stephenafamo/bob/dialect/psql/im"
 	"github.com/stephenafamo/bob/dialect/psql/sm"
 )
@@ -74,4 +75,24 @@ func (r *PGLyricsRepository) Get(ctx context.Context, songID int) (entities.Lyri
 		SongID:  songID,
 		Content: content,
 	}, nil
+}
+
+func (r *PGLyricsRepository) Delete(ctx context.Context, songID int) error {
+
+	stmt := psql.Delete(
+		dm.From("lyrics"),
+		dm.Where(psql.Quote("song_id").EQ(psql.Arg(songID))),
+	)
+
+	query, args := stmt.MustBuild(ctx)
+	r.logger.Debug("executing delete lyrics query", "query", query, "args", args)
+
+	_, err := r.db.Conn(ctx).Exec(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	r.logger.Debug("lyrics deleted successfully", "song_id", songID)
+
+	return nil
 }

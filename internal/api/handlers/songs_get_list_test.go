@@ -19,7 +19,7 @@ import (
 
 func setupGetSongsRouter(mockLogger *MockLogger, mockUseCases *MockGetSongListUseCase) *gin.Engine {
 	gin.SetMode(gin.TestMode)
-	r := gin.Default()
+	r := gin.New()
 
 	useCases := usecase.UseCases{
 		GetSongList: mockUseCases,

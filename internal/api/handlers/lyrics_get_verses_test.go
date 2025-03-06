@@ -18,7 +18,7 @@ import (
 
 func setupGetLyricsRouter(mockLogger *MockLogger, mockUseCases *MockGetSongLyricsUseCase) *gin.Engine {
 	gin.SetMode(gin.TestMode)
-	r := gin.Default()
+	r := gin.New()
 
 	useCases := usecase.UseCases{
 		GetSongLyrics: mockUseCases,

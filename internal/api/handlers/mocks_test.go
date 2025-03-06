@@ -66,3 +66,12 @@ func (m *MockGetSongLyricsUseCase) Execute(ctx context.Context, songID int, filt
 	}
 	return args.Get(0).([]entities.LyricsVerseData), args.Error(1)
 }
+
+type MockDeleteSongUseCase struct {
+	mock.Mock
+}
+
+func (m *MockDeleteSongUseCase) Execute(ctx context.Context, id int) error {
+	args := m.Called(ctx, id)
+	return args.Error(0)
+}

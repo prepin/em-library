@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/stephenafamo/bob/dialect/psql"
+	"github.com/stephenafamo/bob/dialect/psql/dm"
 	"github.com/stephenafamo/bob/dialect/psql/im"
 	"github.com/stephenafamo/bob/dialect/psql/sm"
 )
@@ -118,4 +119,24 @@ func (r *PGSongRepository) GetList(
 
 	r.logger.Debug("Successfully queried songs", "count", len(songs))
 	return songs, nil
+}
+
+func (r *PGSongRepository) Delete(ctx context.Context, songID int) error {
+	stmt := psql.Delete(
+		dm.From("songs"),
+		dm.Where(psql.Quote("id").EQ(psql.Arg(songID))),
+	)
+
+	query, args := stmt.MustBuild(ctx)
+	r.logger.Debug("executing delete song query", "query", query, "args", args)
+
+	_, err := r.db.Conn(ctx).Exec(ctx, query, args...)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	r.logger.Debug("song deleted successfully", "id", songID)
+
+	return nil
 }

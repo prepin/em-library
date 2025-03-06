@@ -36,6 +36,7 @@ func (h *Handlers) RegisterRoutes(r *gin.Engine) {
 			// Песни
 			g.POST("/song", h.Songs.CreateSong)
 			g.GET("/songs", h.Songs.GetSongsList)
+			g.DELETE("/song/:id", h.Songs.DeleteSong)
 
 			// Тексты
 			g.GET("/song/:id/lyrics", h.Lyrics.GetLyrics)

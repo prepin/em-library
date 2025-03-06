@@ -38,6 +38,11 @@ func (m *MockSongRepo) GetList(ctx context.Context, filter entities.SongFilterDa
 	return args.Get(0).([]entities.SongData), args.Error(1)
 }
 
+func (m *MockSongRepo) Delete(ctx context.Context, songID int) error {
+	args := m.Called(ctx, songID)
+	return args.Error(0)
+}
+
 type MockLyricsRepo struct {
 	mock.Mock
 }
@@ -55,6 +60,11 @@ func (m *MockLyricsRepo) Get(ctx context.Context, songID int) (entities.LyricsDa
 	}
 
 	return args.Get(0).(entities.LyricsData), args.Error(1)
+}
+
+func (m *MockLyricsRepo) Delete(ctx context.Context, songID int) error {
+	args := m.Called(ctx, songID)
+	return args.Error(0)
 }
 
 type MockSongInfoService struct {
