@@ -6,11 +6,12 @@ import (
 )
 
 type DBConfig struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	DBName   string
+	Host          string
+	Port          int
+	User          string
+	Password      string
+	DBName        string
+	RunMigrations bool
 }
 
 func (c *Config) loadDBConfig() {
@@ -19,12 +20,15 @@ func (c *Config) loadDBConfig() {
 		c.Logger.Error("Error: EMLIB must be an integer")
 	}
 
+	runMigrationsStr := c.getEnv("EMLIB_RUN_MIGRATIONS", "1")
+
 	c.DB = DBConfig{
-		Host:     c.getEnv("EMLIB_DB_HOST", "localhost"),
-		Port:     port,
-		User:     c.getEnv("EMLIB_DB_USER", "postgres"),
-		Password: c.getEnv("EMLIB_DB_PASSWORD", ""),
-		DBName:   c.getEnv("EMLIB_DB_NAME", "postgres"),
+		Host:          c.getEnv("EMLIB_DB_HOST", "localhost"),
+		Port:          port,
+		User:          c.getEnv("EMLIB_DB_USER", "postgres"),
+		Password:      c.getEnv("EMLIB_DB_PASSWORD", ""),
+		DBName:        c.getEnv("EMLIB_DB_NAME", "postgres"),
+		RunMigrations: runMigrationsStr == "1",
 	}
 
 }
