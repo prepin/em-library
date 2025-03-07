@@ -29,6 +29,20 @@ type GetLyricsParams struct {
 	Limit  *int `form:"limit" binding:"omitempty,min=1"`
 }
 
+// GetLyrics godoc
+// @Summary Получить текст песни
+// @Description Получить куплеты песни по ID песни с возможностью пагинации
+// @Tags lyrics
+// @Accept json
+// @Produce json
+// @Param id path int true "ID песни"
+// @Param offset query int false "С какого куплета начать"
+// @Param limit query int false "Сколько куплетов вывести для пагинации"
+// @Success 200 {array} entities.LyricsVerseData "Текст песни успешно получен"
+// @Failure 400 {object} ErrorResponse "Неверный запрос"
+// @Failure 404 {object} ErrorResponse "Текст песни не найден"
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /song/{id}/lyrics [get]
 func (h *LyricsHandler) GetLyrics(c *gin.Context) {
 	songIDParam := c.Param("id")
 	songID, err := strconv.Atoi(songIDParam)

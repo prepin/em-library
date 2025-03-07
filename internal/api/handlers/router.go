@@ -4,7 +4,11 @@ import (
 	"em-library/config"
 	"em-library/internal/usecase"
 
+	docs "em-library/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Handlers struct {
@@ -22,6 +26,12 @@ func NewHandlers(cfg *config.Config, usecases usecase.UseCases) *Handlers {
 }
 
 func (h *Handlers) RegisterRoutes(r *gin.Engine) {
+	// Swagger документация
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.Title = "EM Song Library API"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Description = "Библиотека песен"
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// две группы нужны для версионирования API при возможных изменениях без обратной совместимости
 	api := r.Group("/api")

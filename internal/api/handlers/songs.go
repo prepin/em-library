@@ -31,6 +31,19 @@ type CreateSongParams struct {
 	Song string `json:"song" binding:"required,min=1"`
 }
 
+// CreateSong godoc
+// @Summary Создание новой песни
+// @Description Создает новую песню с указанными данными
+// @Tags songs
+// @Accept json
+// @Produce json
+// @Param song body CreateSongParams true "Данные песни"
+// @Success 201 {object} entities.SongData "Данные созданной песни"
+// @Failure 400 {object} ErrorResponse "Неверный формат запроса"
+// @Failure 409 {object} ErrorResponse "Песня уже существует"
+// @Failure 502 {object} ErrorResponse "Ошибка внешнего сервиса"
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /song [post]
 func (h *SongsHandler) CreateSong(c *gin.Context) {
 	var params *CreateSongParams
 
@@ -78,6 +91,23 @@ type GetSongsParams struct {
 	Limit           *int       `form:"limit" binding:"omitempty,min=1"`
 }
 
+// GetSongsList godoc
+// @Summary Получение списка песен
+// @Description Возвращает список песен с возможностью фильтрации
+// @Tags songs
+// @Produce json
+// @Param id query int false "ID песни"
+// @Param band query string false "Название группы"
+// @Param song query string false "Название песни"
+// @Param release_date_from query string false "Дата релиза от (формат: 2006-01-02)"
+// @Param release_date_to query string false "Дата релиза до (формат: 2006-01-02)"
+// @Param offset query int false "С какой песни выводить"
+// @Param limit query int false "Сколько песен выводить"
+// @Success 200 {array} entities.SongData "Список песен"
+// @Failure 400 {object} ErrorResponse "Неверный формат запроса"
+// @Failure 404 {object} ErrorResponse "Песни не найдены"
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /songs [get]
 func (h *SongsHandler) GetSongsList(c *gin.Context) {
 	var params GetSongsParams
 
@@ -114,6 +144,15 @@ func (h *SongsHandler) GetSongsList(c *gin.Context) {
 	c.JSON(http.StatusOK, songs)
 }
 
+// DeleteSong godoc
+// @Summary Удаление песни
+// @Description Удаляет песню по указанному ID
+// @Tags songs
+// @Param id path int true "ID песни"
+// @Success 204 "Песня успешно удалена"
+// @Failure 400 {object} ErrorResponse "Неверный формат ID"
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /song/{id} [delete]
 func (h *SongsHandler) DeleteSong(c *gin.Context) {
 	songIDParam := c.Param("id")
 	songID, err := strconv.Atoi(songIDParam)
@@ -142,6 +181,18 @@ type PatchSongParams struct {
 	Lyrics      *string       `json:"lyrics" binding:"omitempty,min=1"`
 }
 
+// UpdateSong godoc
+// @Summary Обновление данных песни
+// @Description Обновляет информацию о песне по указанному ID
+// @Tags songs
+// @Accept json
+// @Param id path int true "ID песни"
+// @Param song body PatchSongParams true "Обновляемые данные песни"
+// @Success 204 "Песня успешно обновлена"
+// @Failure 400 {object} ErrorResponse "Неверный формат запроса или ID"
+// @Failure 404 {object} ErrorResponse "Песня не найдена"
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /song/{id} [patch]
 func (h *SongsHandler) UpdateSong(c *gin.Context) {
 	songIDParam := c.Param("id")
 	songID, err := strconv.Atoi(songIDParam)
