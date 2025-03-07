@@ -23,8 +23,9 @@ func Load() *Config {
 
 func (c *Config) load() {
 	err := godotenv.Load()
+	var envFileFound bool = true
 	if err != nil {
-		c.Logger.Debug(".env file not found, only ENV variables are used")
+		envFileFound = false
 	}
 
 	logLevel := os.Getenv("EMLIB_LOG_LEVEL")
@@ -33,6 +34,10 @@ func (c *Config) load() {
 		c.Logger = logging.NewLogger(logLevel)
 	default:
 		c.Logger = logging.NewLogger("info")
+	}
+
+	if envFileFound {
+		c.Logger.Debug(".env file not found, only ENV variables are used")
 	}
 
 	c.loadDBConfig()
