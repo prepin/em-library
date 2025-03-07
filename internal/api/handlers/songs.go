@@ -62,7 +62,7 @@ func (h *SongsHandler) CreateSong(c *gin.Context) {
 		return
 	}
 
-	h.logger.Debug("Song created successfully", "id", songData.ID)
+	h.logger.Info("Song created successfully", "id", songData.ID)
 
 	c.JSON(http.StatusCreated, songData)
 
