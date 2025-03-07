@@ -70,7 +70,7 @@ type GetSongsParams struct {
 	Song            *string    `form:"song" binding:"omitempty,min=1"`
 	ReleaseDateFrom *time.Time `form:"release_date_from" binding:"omitempty" time_format:"2006-01-02"`
 	ReleaseDateTo   *time.Time `form:"release_date_to" binding:"omitempty" time_format:"2006-01-02"`
-	Offset          *int       `form:"offset" binding:"omitempty"`
+	Offset          *int       `form:"offset" binding:"omitempty,min=0"`
 	Limit           *int       `form:"limit" binding:"omitempty,min=1"`
 }
 
