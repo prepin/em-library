@@ -25,7 +25,7 @@ func NewMigrator(cfg config.DBConfig) *Migrator {
 func (mg *Migrator) RunMigrations() error {
 	_, filename, _, _ := runtime.Caller(0)
 	currentDir := filepath.Dir(filename)
-	migrationsPath := filepath.Join(currentDir, "..", "..", "schema", "migrations")
+	migrationsPath := filepath.Join(currentDir, "..", "..", "migrations")
 
 	absPath, err := filepath.Abs(migrationsPath)
 	if err != nil {
