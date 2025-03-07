@@ -36,7 +36,7 @@ func (h *SongsHandler) CreateSong(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		h.logger.Debug("Failed parsing request params", "error", err)
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: formatValidationError(err)})
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -83,7 +83,7 @@ func (h *SongsHandler) GetSongsList(c *gin.Context) {
 
 	if err := c.ShouldBindQuery(&params); err != nil {
 		h.logger.Debug("Failed parsing request params", "error", err)
-		c.JSON(http.StatusBadRequest, InvalidRequestResponse)
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
 

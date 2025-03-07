@@ -42,7 +42,7 @@ func (h *LyricsHandler) GetLyrics(c *gin.Context) {
 	var params GetLyricsParams
 	if err := c.ShouldBindQuery(&params); err != nil {
 		h.logger.Debug("Failed parsing request params", "error", err)
-		c.JSON(http.StatusBadRequest, InvalidRequestResponse)
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
 

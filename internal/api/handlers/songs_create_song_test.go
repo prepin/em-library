@@ -109,7 +109,6 @@ func TestSongsHandler_CreateSong_InvalidJSON(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, recorder.Code)
 
 	mockLogger.AssertExpectations(t)
-	// No need to explicitly check that Execute wasn't called
 }
 
 // Должен отдать BadRequest если не хватает данных в полях
