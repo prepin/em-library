@@ -18,7 +18,7 @@ type SongData struct {
 	ID          int       `json:"id"`
 	Band        string    `json:"band"`
 	Song        string    `json:"song"`
-	ReleaseDate time.Time `json:"release_date" format:"2006-01-02"`
+	ReleaseDate time.Time `json:"release_date"`
 	Link        string    `json:"link"`
 }
 
@@ -36,6 +36,15 @@ func (s SongData) MarshalJSON() ([]byte, error) {
 // DTO для обогащения данных песни
 type SongDetail struct {
 	ReleaseDate time.Time
-	Text        string
+	Lyrics      string
 	Link        string
+}
+
+// DTO для обновления данных песни
+type UpdateSongData struct {
+	Band        *string
+	Song        *string
+	ReleaseDate *time.Time
+	Link        *string
+	Lyrics      *string
 }

@@ -22,12 +22,14 @@ type Services struct {
 type SongRepo interface {
 	Create(ctx context.Context, data entities.NewSongData) (int, error)
 	GetList(ctx context.Context, filter entities.SongFilterData) ([]entities.SongData, error)
+	Update(ctx context.Context, songID int, data entities.UpdateSongData) error
 	Delete(ctx context.Context, songID int) error
 }
 
 type LyricsRepo interface {
 	Create(ctx context.Context, data entities.NewLyricsData) error
 	Get(ctx context.Context, songID int) (entities.LyricsData, error)
+	Update(ctx context.Context, songID int, data entities.UpdateSongData) error
 	Delete(ctx context.Context, songID int) error
 }
 

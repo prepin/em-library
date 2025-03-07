@@ -2,6 +2,7 @@ package entities
 
 import "time"
 
+// Параметры запроса списка песен
 type SongFilterData struct {
 	ID              *int
 	Band            *string

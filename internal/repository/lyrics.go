@@ -8,12 +8,14 @@ import (
 	"em-library/pkg/database"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/stephenafamo/bob/dialect/psql"
 	"github.com/stephenafamo/bob/dialect/psql/dm"
 	"github.com/stephenafamo/bob/dialect/psql/im"
 	"github.com/stephenafamo/bob/dialect/psql/sm"
+	"github.com/stephenafamo/bob/dialect/psql/um"
 )
 
 type PGLyricsRepository struct {
@@ -75,6 +77,35 @@ func (r *PGLyricsRepository) Get(ctx context.Context, songID int) (entities.Lyri
 		SongID:  songID,
 		Content: content,
 	}, nil
+}
+
+func (r *PGLyricsRepository) Update(ctx context.Context, songID int, data entities.UpdateSongData) error {
+
+	if data.Lyrics == nil {
+		return nil
+	}
+
+	stmt := psql.Update(
+		um.Table("lyrics"),
+		um.SetCol("content").ToArg(data.Lyrics),
+		um.SetCol("updated_at").ToArg(time.Now()),
+		um.Where(psql.Quote("song_id").EQ(psql.Arg(songID))),
+	)
+
+	query, args := stmt.MustBuild(ctx)
+	r.logger.Debug("executing update lyrics query", "query", query, "args", args)
+
+	ct, err := r.db.Conn(ctx).Exec(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+	if ct.RowsAffected() == 0 {
+		return fmt.Errorf("%w no lyrics rows updated", errs.ErrNotFound)
+	}
+
+	r.logger.Debug("lyrics updated successfully", "id", songID)
+
+	return nil
 }
 
 func (r *PGLyricsRepository) Delete(ctx context.Context, songID int) error {

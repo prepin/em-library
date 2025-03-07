@@ -5,6 +5,7 @@ type UseCases struct {
 	GetSongList   GetSongListUseCase
 	GetSongLyrics GetSongLyricsUseCase
 	DeleteSong    DeleteSongUseCase
+	UpdateSong    UpdateSongUseCase
 }
 
 func NewUseCases(r Repos, s Services) UseCases {
@@ -13,5 +14,6 @@ func NewUseCases(r Repos, s Services) UseCases {
 		GetSongList:   NewGetSongListUseCase(r.SongRepo),
 		GetSongLyrics: NewGetSongLyricsUsecase(r.LyricsRepo),
 		DeleteSong:    NewDeleteSongUseCase(r.TransactionManager, r.SongRepo, r.LyricsRepo),
+		UpdateSong:    NewUpdateSongUseCase(r.TransactionManager, r.SongRepo, r.LyricsRepo),
 	}
 }

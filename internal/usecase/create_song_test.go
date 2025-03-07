@@ -31,7 +31,7 @@ func TestCreateSongUseCase_Execute_Success(t *testing.T) {
 	songDetail := &entities.SongDetail{
 		ReleaseDate: releaseDate,
 		Link:        "https://example.com/song",
-		Text:        "Song lyrics",
+		Lyrics:        "Song lyrics",
 	}
 
 	expectedData := inputData
@@ -43,7 +43,7 @@ func TestCreateSongUseCase_Execute_Success(t *testing.T) {
 	mockSongRepo.On("Create", ctx, expectedData).Return(expectedID, nil)
 	mockLyricsRepo.On("Create", ctx, entities.NewLyricsData{
 		SongID:  expectedID,
-		Content: songDetail.Text,
+		Content: songDetail.Lyrics,
 	}).Return(nil)
 
 	result, err := useCase.Execute(ctx, inputData)
@@ -107,7 +107,7 @@ func TestCreateSongUseCase_Execute_SongRepoError(t *testing.T) {
 	songDetail := &entities.SongDetail{
 		ReleaseDate: releaseDate,
 		Link:        "https://example.com/song",
-		Text:        "Song lyrics",
+		Lyrics:        "Song lyrics",
 	}
 
 	expectedData := inputData
@@ -149,7 +149,7 @@ func TestCreateSongUseCase_Execute_LyricsRepoError(t *testing.T) {
 	songDetail := &entities.SongDetail{
 		ReleaseDate: releaseDate,
 		Link:        "https://example.com/song",
-		Text:        "Song lyrics",
+		Lyrics:        "Song lyrics",
 	}
 
 	expectedData := inputData
@@ -163,7 +163,7 @@ func TestCreateSongUseCase_Execute_LyricsRepoError(t *testing.T) {
 	mockSongRepo.On("Create", ctx, expectedData).Return(expectedID, nil)
 	mockLyricsRepo.On("Create", ctx, entities.NewLyricsData{
 		SongID:  expectedID,
-		Content: songDetail.Text,
+		Content: songDetail.Lyrics,
 	}).Return(expectedError)
 
 	result, err := useCase.Execute(ctx, inputData)

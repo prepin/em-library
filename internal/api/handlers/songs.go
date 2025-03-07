@@ -5,6 +5,7 @@ import (
 	"em-library/internal/entities"
 	"em-library/internal/errs"
 	"em-library/internal/usecase"
+	"em-library/pkg/formats"
 	"errors"
 	"net/http"
 	"strconv"
@@ -126,5 +127,59 @@ func (h *SongsHandler) DeleteSong(c *gin.Context) {
 		return
 	}
 
+	c.Status(http.StatusNoContent)
+}
+
+type PatchSongParams struct {
+	Band        *string       `json:"band" binding:"omitempty,min=1"`
+	Song        *string       `json:"song" binding:"omitempty,min=1"`
+	ReleaseDate *formats.Date `json:"release_date" binding:"omitempty"`
+	Link        *string       `json:"link" binding:"omitempty,min=1"`
+	Lyrics      *string       `json:"lyrics" binding:"omitempty,min=1"`
+}
+
+func (h *SongsHandler) UpdateSong(c *gin.Context) {
+	songIDParam := c.Param("id")
+	songID, err := strconv.Atoi(songIDParam)
+
+	if err != nil {
+		h.logger.Debug("Missing or invalid ID param for request", "ID param", songIDParam)
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "song ID is required"})
+		return
+	}
+
+	var params PatchSongParams
+	if err := c.ShouldBindJSON(&params); err != nil {
+		h.logger.Debug("Failed parsing request params", "error", err)
+		c.JSON(http.StatusBadRequest, InvalidRequestResponse)
+		return
+	}
+
+	var releaseDate *time.Time
+	if params.ReleaseDate != nil {
+		t := params.ReleaseDate.Time()
+		releaseDate = &t
+	}
+
+	err = h.usecases.UpdateSong.Execute(c.Request.Context(), songID, entities.UpdateSongData{
+		Band:        params.Band,
+		Song:        params.Song,
+		ReleaseDate: releaseDate,
+		Link:        params.Link,
+		Lyrics:      params.Lyrics,
+	})
+
+	if err != nil {
+		if errors.Is(err, errs.ErrNotFound) {
+			h.logger.Debug("Song not found", "ID", songID)
+			c.JSON(http.StatusNotFound, NotFoundResponse)
+			return
+		}
+		h.logger.Error("Failed to update song", "ID", songID, "error", err)
+		c.JSON(http.StatusInternalServerError, ServerErrorResponse)
+		return
+	}
+
+	h.logger.Debug("Song updated successfully", "ID", songID)
 	c.Status(http.StatusNoContent)
 }

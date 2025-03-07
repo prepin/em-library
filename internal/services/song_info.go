@@ -20,7 +20,7 @@ func (s *RESTSongInfoService) GetInfo(ctx context.Context, group, song string) (
 
 	songDetail := entities.SongDetail{
 		ReleaseDate: time.Now(),
-		Text: `Ooh baby, don't you know I suffer?\nOoh baby, can
+		Lyrics: `Ooh baby, don't you know I suffer?\nOoh baby, can
 you hear me moan?\nYou caught me under false pretenses\nHow long
 before you let me go?\n\nOoh\nYou set my soul alight\nOoh\nYou set
 my soul alight`,

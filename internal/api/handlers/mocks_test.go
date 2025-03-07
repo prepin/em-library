@@ -75,3 +75,12 @@ func (m *MockDeleteSongUseCase) Execute(ctx context.Context, id int) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
+
+type MockUpdateSongUseCase struct {
+	mock.Mock
+}
+
+func (m *MockUpdateSongUseCase) Execute(ctx context.Context, id int, data entities.UpdateSongData) error {
+	args := m.Called(ctx, id, data)
+	return args.Error(0)
+}

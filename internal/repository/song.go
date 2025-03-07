@@ -7,6 +7,7 @@ import (
 	"em-library/internal/errs"
 	"em-library/pkg/database"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -14,6 +15,7 @@ import (
 	"github.com/stephenafamo/bob/dialect/psql/dm"
 	"github.com/stephenafamo/bob/dialect/psql/im"
 	"github.com/stephenafamo/bob/dialect/psql/sm"
+	"github.com/stephenafamo/bob/dialect/psql/um"
 )
 
 type PGSongRepository struct {
@@ -121,6 +123,64 @@ func (r *PGSongRepository) GetList(
 	return songs, nil
 }
 
+func (r *PGSongRepository) Update(ctx context.Context, songID int, data entities.UpdateSongData) error {
+
+	nothingToUpdate := true
+
+	stmt := psql.Update(
+		um.Table("songs"),
+		um.SetCol("updated_at").ToArg(time.Now()),
+		um.Where(psql.Quote("id").EQ(psql.Arg(songID))),
+	)
+
+	if data.Band != nil {
+		stmt.Apply(
+			um.SetCol("band").ToArg(*data.Band),
+		)
+		nothingToUpdate = false
+	}
+
+	if data.Song != nil {
+		stmt.Apply(
+			um.SetCol("song").ToArg(*data.Song),
+		)
+		nothingToUpdate = false
+	}
+
+	if data.ReleaseDate != nil {
+		stmt.Apply(
+			um.SetCol("release_date").ToArg(*data.ReleaseDate),
+		)
+		nothingToUpdate = false
+	}
+
+	if data.Link != nil {
+		stmt.Apply(
+			um.SetCol("link").ToArg(*data.Link),
+		)
+		nothingToUpdate = false
+	}
+
+	if nothingToUpdate {
+		return nil
+	}
+
+	query, args := stmt.MustBuild(ctx)
+	r.logger.Debug("executing update song query", "query", query, "args", args)
+
+	ct, err := r.db.Conn(ctx).Exec(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+	if ct.RowsAffected() == 0 {
+		return fmt.Errorf("%w no song rows updated", errs.ErrNotFound)
+	}
+
+	r.logger.Debug("song updated successfully", "id", songID)
+
+	return nil
+}
+
 func (r *PGSongRepository) Delete(ctx context.Context, songID int) error {
 	stmt := psql.Delete(
 		dm.From("songs"),
@@ -132,7 +192,6 @@ func (r *PGSongRepository) Delete(ctx context.Context, songID int) error {
 
 	_, err := r.db.Conn(ctx).Exec(ctx, query, args...)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 

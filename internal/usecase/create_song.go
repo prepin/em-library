@@ -49,7 +49,7 @@ func (u *createSongUseCase) Execute(ctx context.Context, data entities.NewSongDa
 
 		err = u.lyricsRepo.Create(ctx, entities.NewLyricsData{
 			SongID:  id,
-			Content: info.Text,
+			Content: info.Lyrics,
 		})
 
 		return nil

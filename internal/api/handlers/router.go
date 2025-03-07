@@ -34,8 +34,9 @@ func (h *Handlers) RegisterRoutes(r *gin.Engine) {
 			g.GET("/teapot", GetTeapotHandler)
 
 			// Песни
-			g.POST("/song", h.Songs.CreateSong)
 			g.GET("/songs", h.Songs.GetSongsList)
+			g.POST("/song", h.Songs.CreateSong)
+			g.PATCH("/song/:id", h.Songs.UpdateSong)
 			g.DELETE("/song/:id", h.Songs.DeleteSong)
 
 			// Тексты
