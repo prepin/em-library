@@ -195,3 +195,21 @@ func TestLyricsHandler_GetLyrics_InternalError(t *testing.T) {
 	mockLogger.AssertExpectations(t)
 	mockUseCase.AssertExpectations(t)
 }
+
+// Тест с отрицательным offset
+func TestLyricsHandler_GetLyrics_NegativeOffset(t *testing.T) {
+	mockLogger := new(MockLogger)
+	mockUseCase := new(MockGetSongLyricsUseCase)
+
+	mockLogger.On("Debug", "Failed parsing request params", mock.Anything).Once()
+
+	router := setupGetLyricsRouter(mockLogger, mockUseCase)
+
+	req, _ := http.NewRequest(http.MethodGet, "/songs/123/lyrics?offset=-1", nil)
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	assert.Equal(t, http.StatusBadRequest, recorder.Code)
+
+	mockLogger.AssertExpectations(t)
+}

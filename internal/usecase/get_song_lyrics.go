@@ -48,13 +48,15 @@ func (u *getSongLyricsUseCase) Execute(
 	var lastVerse int
 
 	if filter.Offset != nil {
-		firstVerse = min(*filter.Offset, len(verses))
+		firstVerse = max(*filter.Offset, 0) // чтобы не взять отрицательный индекс в слайсе
+		firstVerse = min(firstVerse, len(verses))
 	} else {
 		firstVerse = 0
 	}
 
 	if filter.Limit != nil {
-		lastVerse = min(firstVerse+*filter.Limit, len(verses))
+		limit := max(0, *filter.Limit)
+		lastVerse = min(firstVerse+limit, len(verses))
 	} else {
 		lastVerse = len(verses)
 	}

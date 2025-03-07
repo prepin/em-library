@@ -25,7 +25,7 @@ func NewLyricsHandler(l config.Logger, u usecase.UseCases) *LyricsHandler {
 }
 
 type GetLyricsParams struct {
-	Offset *int `form:"offset" binding:"omitempty"`
+	Offset *int `form:"offset" binding:"omitempty,min=0"`
 	Limit  *int `form:"limit" binding:"omitempty,min=1"`
 }
 
