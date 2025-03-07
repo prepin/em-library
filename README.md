@@ -17,18 +17,18 @@
 * `EMLIB_DB_NAME` — название базы на сервере Postgres.
 * `EMLIB_SERVER_PORT` — порт, на котором будет доступно API микросервиса (по умолчанию `8080`)
 * `EMLIB_SERVER_MODE` — режим работы Gin сервера (по умолчанию `debug`)
-* `EMLIB_LOG_LEVEL` — уровень логирования в логике приложения (по умолчанию `debug`)
+* `EMLIB_LOG_LEVEL` — уровень логирования в логике приложения (по умолчанию `debug`). Допустимые значения `debug`, `info`, `warning`, `error`.
 * `EMLIB_RUN_MIGRATIONS` — запускать ли миграции при старте сервиса (по умолчанию `1` — запускать)
 * `EMLIB_INFOSERVICE_URL` — адрес сервиса с данными песен. По умолчанию `http://127.0.0.1:8000`. Адрес конкретной ручки (`/info`) добавлять в конфиг не нужно.
 * `EMLIB_INFOSERVICE_TIMEOUT`. Настройка таймаута ответа внешнего сервиса в миллисекундах, после которого перестаём ждать и сообщаем об ошибке. По умолчанию `500`.
 
 # Документация
-Доступна через swagger по адресу http://localhost:8080/swagger/index.html. Подставить нужный порт для сервиса.
+Доступна через swagger по адресу http://localhost:8080/swagger/index.html. Где localhost:8080 — это адрес запущенного сервиса.
 
 # Миграции при помощи goose
 Миграции запускаются при старте сервиса автоматически, но при желании, их можно запустить и вручную.
 
-Проверить, текущий статус
+Проверить текущий статус
 ```
 goose postgres "postgres://prepin:@localhost:5432/em_library?sslmode=disable" -dir=schema/migrations status
 ```
@@ -36,11 +36,7 @@ goose postgres "postgres://prepin:@localhost:5432/em_library?sslmode=disable" -d
 ```
 goose postgres "postgres://prepin:@localhost:5432/em_library?sslmode=disable" -dir=schema/migrations up
 ```
-
-Сиды
+Откатить все миграции.
 ```
-goose postgres "postgres://prepin:@localhost:5432/em_library?sslmode=disable" -dir=schema/seed/ -no-versioning up
-```
-```
-goose postgres "postgres://prepin:@localhost:5432/em_library?sslmode=disable" -dir=schema/seed -no-versioning reset
+goose postgres "postgres://prepin:@localhost:5432/em_library?sslmode=disable" -dir=schema/migrations reset
 ```
