@@ -46,15 +46,19 @@ func (h *SongsHandler) CreateSong(c *gin.Context) {
 			Band: params.Band,
 		},
 	)
+
 	if err != nil {
-		if errors.Is(err, errs.ErrAlreadyExists) {
+		switch {
+		case errors.Is(err, errs.ErrAlreadyExists):
 			h.logger.Debug("Song already exists", "error", err)
 			c.JSON(http.StatusConflict, AlreadyExistsResponse)
-			return
+		case errors.Is(err, errs.ErrServiceProblem{}):
+			h.logger.Error("External Service fail", "error", err)
+			c.JSON(http.StatusBadGateway, BadGatewayResponse)
+		default:
+			h.logger.Error("Creation of song failed", "error", err)
+			c.JSON(http.StatusInternalServerError, ServerErrorResponse)
 		}
-
-		h.logger.Error("Creation of song failed", "error", err)
-		c.JSON(http.StatusInternalServerError, ServerErrorResponse)
 		return
 	}
 

@@ -21,7 +21,7 @@ func New(cfg *config.Config, db *database.Database) *Application {
 	}
 
 	services := usecase.Services{
-		SongInfoService: services.NewRESTSongInfoService(),
+		SongInfoService: services.NewRESTSongInfoService(cfg.Services, cfg.Logger),
 	}
 
 	usecases := usecase.NewUseCases(repos, services)

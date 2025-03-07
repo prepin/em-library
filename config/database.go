@@ -17,7 +17,7 @@ type DBConfig struct {
 func (c *Config) loadDBConfig() {
 	port, err := strconv.Atoi(c.getEnv("EMLIB_DB_PORT", "5432"))
 	if err != nil {
-		c.Logger.Error("Error: EMLIB must be an integer")
+		c.Logger.Error("Error: EMLIB_DB_PORT must be an integer")
 	}
 
 	runMigrationsStr := c.getEnv("EMLIB_RUN_MIGRATIONS", "1")

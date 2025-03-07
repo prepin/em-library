@@ -12,6 +12,7 @@ require (
 	github.com/pressly/goose/v3 v3.24.1
 	github.com/stephenafamo/bob v0.30.0
 	github.com/stretchr/testify v1.10.0
+	resty.dev/v3 v3.0.0-beta.2
 )
 
 require (

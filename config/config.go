@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	Logger Logger
-	Server ServerConfig
-	DB     DBConfig
+	Logger   Logger
+	Server   ServerConfig
+	DB       DBConfig
+	Services ServicesConfig
 }
 
 func Load() *Config {
@@ -36,6 +37,7 @@ func (c *Config) load() {
 
 	c.loadDBConfig()
 	c.loadServerConfig()
+	c.loadServicesConfig()
 }
 
 func (c *Config) getEnv(key, defaultValue string) string {
