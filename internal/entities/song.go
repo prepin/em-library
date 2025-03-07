@@ -16,7 +16,7 @@ type NewSongData struct {
 // DTO для полной информации о песне (без текста)
 type SongData struct {
 	ID          int       `json:"id"`
-	Band        string    `json:"band"`
+	Band        string    `json:"group"`
 	Song        string    `json:"song"`
 	ReleaseDate time.Time `json:"release_date"`
 	Link        string    `json:"link"`

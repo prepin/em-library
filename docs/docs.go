@@ -161,7 +161,7 @@ const docTemplate = `{
         },
         "/song/{id}/lyrics": {
             "get": {
-                "description": "Получить текст песни по ID песни с возможностью пагинации",
+                "description": "Получить куплеты песни по ID песни с возможностью пагинации",
                 "consumes": [
                     "application/json"
                 ],
@@ -182,13 +182,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Смещение для пагинации",
+                        "description": "С какого куплета начать",
                         "name": "offset",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Лимит записей для пагинации",
+                        "description": "Сколько куплетов вывести для пагинации",
                         "name": "limit",
                         "in": "query"
                     }
@@ -244,7 +244,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Название группы",
-                        "name": "band",
+                        "name": "group",
                         "in": "query"
                     },
                     {
@@ -255,25 +255,25 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Дата выпуска от (формат: 2006-01-02)",
+                        "description": "Дата релиза от (формат: 2006-01-02)",
                         "name": "release_date_from",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Дата выпуска до (формат: 2006-01-02)",
+                        "description": "Дата релиза до (формат: 2006-01-02)",
                         "name": "release_date_to",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Смещение в выборке",
+                        "description": "С какой песни выводить",
                         "name": "offset",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Ограничение количества результатов",
+                        "description": "Сколько песен выводить",
                         "name": "limit",
                         "in": "query"
                     }
@@ -312,7 +312,6 @@ const docTemplate = `{
     },
     "definitions": {
         "entities.LyricsVerseData": {
-            "description": "Куплет песни Index — номер куплета Content — текст куплета",
             "type": "object",
             "properties": {
                 "content": {
@@ -326,7 +325,7 @@ const docTemplate = `{
         "entities.SongData": {
             "type": "object",
             "properties": {
-                "band": {
+                "group": {
                     "type": "string"
                 },
                 "id": {
@@ -371,7 +370,7 @@ const docTemplate = `{
         "handlers.PatchSongParams": {
             "type": "object",
             "properties": {
-                "band": {
+                "group": {
                     "type": "string",
                     "minLength": 1
                 },

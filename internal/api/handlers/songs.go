@@ -83,7 +83,7 @@ func (h *SongsHandler) CreateSong(c *gin.Context) {
 
 type GetSongsParams struct {
 	ID              *int       `form:"id" binding:"omitempty,gt=0"`
-	Band            *string    `form:"band" binding:"omitempty,min=1"`
+	Band            *string    `form:"group" binding:"omitempty,min=1"`
 	Song            *string    `form:"song" binding:"omitempty,min=1"`
 	ReleaseDateFrom *time.Time `form:"release_date_from" binding:"omitempty" time_format:"2006-01-02"`
 	ReleaseDateTo   *time.Time `form:"release_date_to" binding:"omitempty" time_format:"2006-01-02"`
@@ -97,7 +97,7 @@ type GetSongsParams struct {
 // @Tags songs
 // @Produce json
 // @Param id query int false "ID песни"
-// @Param band query string false "Название группы"
+// @Param group query string false "Название группы"
 // @Param song query string false "Название песни"
 // @Param release_date_from query string false "Дата релиза от (формат: 2006-01-02)"
 // @Param release_date_to query string false "Дата релиза до (формат: 2006-01-02)"
@@ -174,7 +174,7 @@ func (h *SongsHandler) DeleteSong(c *gin.Context) {
 }
 
 type PatchSongParams struct {
-	Band        *string       `json:"band" binding:"omitempty,min=1"`
+	Band        *string       `json:"group" binding:"omitempty,min=1"`
 	Song        *string       `json:"song" binding:"omitempty,min=1"`
 	ReleaseDate *formats.Date `json:"release_date" binding:"omitempty"`
 	Link        *string       `json:"link" binding:"omitempty,min=1"`

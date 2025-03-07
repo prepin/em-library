@@ -1,6 +1,5 @@
 definitions:
   entities.LyricsVerseData:
-    description: Куплет песни Index — номер куплета Content — текст куплета
     properties:
       content:
         type: string
@@ -9,7 +8,7 @@ definitions:
     type: object
   entities.SongData:
     properties:
-      band:
+      group:
         type: string
       id:
         type: integer
@@ -39,7 +38,7 @@ definitions:
     type: object
   handlers.PatchSongParams:
     properties:
-      band:
+      group:
         minLength: 1
         type: string
       link:
@@ -156,18 +155,18 @@ paths:
     get:
       consumes:
       - application/json
-      description: Получить текст песни по ID песни с возможностью пагинации
+      description: Получить куплеты песни по ID песни с возможностью пагинации
       parameters:
       - description: ID песни
         in: path
         name: id
         required: true
         type: integer
-      - description: Смещение для пагинации
+      - description: С какого куплета начать
         in: query
         name: offset
         type: integer
-      - description: Лимит записей для пагинации
+      - description: Сколько куплетов вывести для пагинации
         in: query
         name: limit
         type: integer
@@ -205,25 +204,25 @@ paths:
         type: integer
       - description: Название группы
         in: query
-        name: band
+        name: group
         type: string
       - description: Название песни
         in: query
         name: song
         type: string
-      - description: 'Дата выпуска от (формат: 2006-01-02)'
+      - description: 'Дата релиза от (формат: 2006-01-02)'
         in: query
         name: release_date_from
         type: string
-      - description: 'Дата выпуска до (формат: 2006-01-02)'
+      - description: 'Дата релиза до (формат: 2006-01-02)'
         in: query
         name: release_date_to
         type: string
-      - description: Смещение в выборке
+      - description: С какой песни выводить
         in: query
         name: offset
         type: integer
-      - description: Ограничение количества результатов
+      - description: Сколько песен выводить
         in: query
         name: limit
         type: integer
