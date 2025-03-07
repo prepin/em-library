@@ -237,3 +237,35 @@ func TestSongsHandler_CreateSong_ExistingSong(t *testing.T) {
 	mockLogger.AssertExpectations(t)
 	mockUseCase.AssertExpectations(t)
 }
+
+// Проблемы с внешним сервисом, проверяем что отдаём 502
+func TestSongsHandler_CreateSong_ServiceProblem(t *testing.T) {
+	mockLogger := new(MockLogger)
+	mockUseCase := new(MockCreateSongUseCase)
+
+	mockLogger.On("Error", "External Service fail", mock.Anything).Once()
+
+	inputData := handlers.CreateSongParams{
+		Band: "Test Group",
+		Song: "Test Song",
+	}
+
+	mockUseCase.On("Execute", mock.Anything, entities.NewSongData{
+		Band: inputData.Band,
+		Song: inputData.Song,
+	}).Return(nil, errs.ErrServiceProblem{})
+
+	router := setupPostSongsRouter(mockLogger, mockUseCase)
+
+	jsonData, _ := json.Marshal(inputData)
+	req, _ := http.NewRequest(http.MethodPost, "/songs", bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	assert.Equal(t, http.StatusBadGateway, recorder.Code)
+
+	mockLogger.AssertExpectations(t)
+	mockUseCase.AssertExpectations(t)
+}
