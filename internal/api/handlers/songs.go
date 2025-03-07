@@ -139,7 +139,7 @@ func (h *SongsHandler) GetSongsList(c *gin.Context) {
 		return
 	}
 
-	h.logger.Debug("Songs list retrieved successfully")
+	h.logger.Info("Songs list retrieved successfully")
 
 	c.JSON(http.StatusOK, songs)
 }
@@ -235,6 +235,6 @@ func (h *SongsHandler) UpdateSong(c *gin.Context) {
 		return
 	}
 
-	h.logger.Debug("Song updated successfully", "ID", songID)
+	h.logger.Info("Song updated successfully", "ID", songID)
 	c.Status(http.StatusNoContent)
 }

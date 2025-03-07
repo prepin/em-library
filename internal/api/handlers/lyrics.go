@@ -77,5 +77,6 @@ func (h *LyricsHandler) GetLyrics(c *gin.Context) {
 		return
 	}
 
+	h.logger.Info("Song lyrics retrieved successfully", "song", songID)
 	c.JSON(http.StatusOK, lyrics)
 }
