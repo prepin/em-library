@@ -11,22 +11,22 @@ import (
 func main() {
 	cfg := config.Load()
 
-	cfg.Logger.Debug("Running migrations")
+	cfg.Logger.Info("Running migrations")
 	mg := database.NewMigrator(cfg.DB)
 	if err := mg.RunMigrations(); err != nil {
 		cfg.Logger.Error("Failed to run migrations", "errror", err)
 		os.Exit(1)
 	}
-	cfg.Logger.Debug("Migrations run successfully")
+	cfg.Logger.Info("Migrations run successfully")
 
-	cfg.Logger.Debug("Connecting to database")
+	cfg.Logger.Info("Connecting to database")
 	db := database.NewDatabase(cfg.DB, cfg.Logger)
 	if db == nil {
 		cfg.Logger.Error("Failed connect to database", "error")
 		os.Exit(1)
 	}
 	defer db.Close()
-	cfg.Logger.Debug("Connected to database successfully")
+	cfg.Logger.Info("Connected to database successfully")
 
 	app := app.New(cfg, db)
 
